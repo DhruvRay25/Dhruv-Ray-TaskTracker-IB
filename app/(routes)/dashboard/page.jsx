@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { doc, getDoc, getFirestore } from "firebase/firestore";
 import { app } from '@/config/FirebaseConfig';
 import { useRouter } from 'next/navigation';
+import MeetingType from './meeting-type/page';
  
 
 
@@ -45,8 +46,7 @@ function Dashboard() {
 
   return (
     <div>
-      Dashboard
-      Hello
+      <MeetingType/>
       <LogoutLink>Logout</LogoutLink>
     </div>
   )
