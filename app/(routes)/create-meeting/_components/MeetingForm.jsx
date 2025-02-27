@@ -15,6 +15,11 @@ import {
 import LocationOption from '@/app/_utils/LocationOption'
 import Image from 'next/image'
 import ThemeOptions from '@/app/_utils/ThemeOptions'
+import { app } from '@/config/FirebaseConfig'
+import { doc, getFirestore, setDoc } from 'firebase/firestore'
+import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
+import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
   
 
 function MeetingForm({setFormValue}) {
@@ -23,21 +28,41 @@ function MeetingForm({setFormValue}) {
     const [duration, setDuration]=useState(30);
     const [locationType, setLocationType]=useState();
     const [locationUrl, setLocationUrl]=useState();
-
-
+    const db = getFirestore(app); 
+    const {user}=useKindeBrowserClient(); 
+    const router=useRouter(); 
 
 
     useEffect(()=>{
         setFormValue({
             eventName:eventName,
             duration:duration, 
-            locationType:setLocationType,
+            locationType:locationType,
             locationUrl:locationUrl,
             themeColor:themeColor
 
         })
 
-    },[eventName, duration, setLocationType, locationUrl, themeColor])
+    },[eventName, duration, locationType, locationUrl, themeColor])
+
+    const onCreateClick=async()=>{
+        const id = Date.now().toString(); 
+        await setDoc(doc(db, "MeetingEvent", id),
+    {
+        id:id,
+        eventName:eventName,
+            duration:duration, 
+            locationType:locationType,
+            locationUrl:locationUrl || '',
+            themeColor:themeColor,
+            businessId:doc(db, "Business", user?.email),
+            createdBy:user?.email
+    }).then(resp=>{
+        toast('New Meeting Event Created!')
+        router.replace('/dashboard/meeting-type')
+    })
+
+    }
 
 
   return (
@@ -73,9 +98,9 @@ function MeetingForm({setFormValue}) {
             <div className='grid grid-cols-4 gap-3'>
                 {LocationOption.map((option, index)=>(
 
-                    <div className={`border flex flex-col justify-center items-center p-3 rounded-lg
+                    <div key={index} className={`border flex flex-col justify-center items-center p-3 rounded-lg
                     hover:bg-blue-100 hover:border-primary cursor-pointer
-                    ${location==option.name&&'bg-blue-100 border-primary'}`}
+                    ${locationType==option.name&&'bg-blue-100 border-primary'}`}
                     onClick={()=>setLocationType(option.name)}>
                         <Image src={option.icon} width={30} height={30} alt={option.name}/>
                         <h2>{option.name}</h2>
@@ -85,7 +110,7 @@ function MeetingForm({setFormValue}) {
                 ))}
             </div>
             {locationType&&<>
-            <h2 className='font-bold'>Add {location} URL</h2>
+            <h2 className='font-bold'>Add {locationType} URL</h2>
             <Input placeholder='Add URL'
             onChange={(event)=>setLocationUrl(event.target.value)}
             />
@@ -93,7 +118,7 @@ function MeetingForm({setFormValue}) {
             <h2 className='font-bold'>Select Theme Color</h2>
             <div className='flex justify-evenly'>
                 {ThemeOptions.map((color,index)=>(
-                    <div className={`h-7 w-7 rounded-full
+                    <div key={index} className={`h-7 w-7 rounded-full
                     ${themeColor==color&&'border-2 border-black'}`}
                     style={{backgroundColor:color}}
                     onClick={()=>setThemeColor(color)}
@@ -106,7 +131,8 @@ function MeetingForm({setFormValue}) {
         </div>
 
         <Button className="w-full mt-9"
-        disabled={(!eventName||!duration||!setLocationType||!locationUrl)}
+        disabled={(!eventName||!duration)}
+        onClick={()=>onCreateClick()}
         >Create Meeting</Button>
   
     </div>

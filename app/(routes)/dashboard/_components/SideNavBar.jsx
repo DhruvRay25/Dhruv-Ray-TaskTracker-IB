@@ -47,7 +47,7 @@ function SideNavBar() {
   return (
     <div className='p-5 py-14'>
         <div className='flex justify-center'>
-            <Image src='public\mcdonald-s-15-logo-svgrepo-com.svg' width={150} height={150} alt='logo' />
+            <Image src='/mcdonald-s-15-logo-svgrepo-com.svg' width={150} height={150} alt='logo' />
         </div>
         <div>
             <Link href={'/create-meeting'}><Button className="flex gap-2 w-full rounded-full mt-7"><Plus/> Create</Button> </Link>
