@@ -19,6 +19,7 @@ import {
 function MeetingEventList() {
     const db = getFirestore(app);
     const { user } = useKindeBrowserClient();
+    
     const [businessInfo,setBusinessInfo]=useState();
     const [eventList,setEventList]=useState([]);
         useEffect(() => {
@@ -85,7 +86,7 @@ function MeetingEventList() {
                         {event?.eventName}</h2>
                     <div className='flex justify-between'>
                     <h2 className='flex gap-2 text-gray-500'><Clock/> {event.duration} Min </h2>
-                    <h2 className='flex gap-2 text-gray-500'><MapPin/> {event.locationType} Min </h2>
+                    <h2 className='flex gap-2 text-gray-500'><MapPin/> {event.locationType} </h2>
                     
                     </div>
                     <hr></hr>

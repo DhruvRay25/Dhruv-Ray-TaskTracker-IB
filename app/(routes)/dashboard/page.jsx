@@ -47,7 +47,7 @@ function Dashboard() {
   return (
     <div>
       <MeetingType/>
-      <LogoutLink>Logout</LogoutLink>
+      
     </div>
   )
 }
